@@ -3,7 +3,6 @@ aus400
 
 .. automodule:: aus400
    :members:
-   :undoc-members:
    :show-inheritance:
 
 aus400.cat
@@ -11,7 +10,6 @@ aus400.cat
 
 .. automodule:: aus400.cat
    :members:
-   :undoc-members:
    :show-inheritance:
 
 aus400.regrid
@@ -19,5 +17,4 @@ aus400.regrid
 
 .. automodule:: aus400.regrid
    :members:
-   :undoc-members:
    :show-inheritance:

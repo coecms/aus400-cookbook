@@ -14,6 +14,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+The Aus400 catalogue
+
+.. py:data:: catalouge
+    :type: pandas.DataFrame
+
+    The full Aus400 catalouge, as a :class:`pandas.DataFrame`. This catalogue
+    may be filtered using :meth:`filter_catalogue`, or files opened as
+    :class:`xarray.DataSet`s with :meth:`load` or :meth:`load_all`.
+"""
+
 import pandas
 import xarray
 from pathlib import Path
@@ -34,7 +45,7 @@ def load_catalogue():
 catalogue = load_catalogue()
 
 
-def filter_catalogue(c=catalogue, **kwargs):
+def filter_catalogue(cat: pandas.DataFrame=catalogue, **kwargs):
     """
     Returns a filtered view of the catalogue
 
@@ -42,15 +53,17 @@ def filter_catalogue(c=catalogue, **kwargs):
     complex filtering is required a different source may be provided.
 
     Args:
-        catalogue: Source catalogue (default aus400.catalogue)
+        catalogue: Source catalogue (default :data:`catalogue`)
         resolution ('d0036' or 'd0198'): Resolution to select
         ensemble (int): Ensemble member to select
         stream (str): Output stream to select
         variable (str): Variable name to select
+        **kwargs: Any other column from :data:`catalouge`
 
     Returns:
         A filtered view of the catalogue
     """
+    c = cat
 
     for k, v in kwargs.items():
         c = c[c[k] == v]
@@ -58,7 +71,7 @@ def filter_catalogue(c=catalogue, **kwargs):
     return c
 
 
-def load_all(**kwargs):
+def load_all(cat: pandas.DataFrame=catalogue, **kwargs):
     """
     Load multiple variables, e.g. from different streams or resolutions
 
@@ -66,12 +79,13 @@ def load_all(**kwargs):
     catalogue
 
     Args:
-        kwargs: See filter_catalogue
+        **kwargs: See :meth:`filter_catalogue`
 
     Returns:
-        Dict[str, xarray.Dataset]
+        Dict[str, :obj:`xarray.Dataset`], with keys named like
+        "{resolution}.{stream}.{variable}"
     """
-    c = filter_catalogue(**kwargs)
+    c = filter_catalogue(cat, **kwargs)
 
     results = {}
 
@@ -121,7 +135,7 @@ def load_all(**kwargs):
     return results
 
 
-def load(**kwargs):
+def load(cat: pandas.DataFrame=catalouge, **kwargs):
     """
     Load a single variable
 
@@ -129,13 +143,13 @@ def load(**kwargs):
     catalogue
 
     Args:
-        See filter_catalogue
+        **kwargs: See :meth:`filter_catalogue`
 
     Returns:
-        xarray.Dataset
+        :obj:`xarray.Dataset`
     """
 
-    results = load_all(**kwargs)
+    results = load_all(cat, **kwargs)
 
     if len(results) > 1:
         raise ValueError(
