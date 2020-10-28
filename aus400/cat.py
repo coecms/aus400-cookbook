@@ -135,7 +135,7 @@ def load_all(cat: pandas.DataFrame=catalogue, **kwargs):
     return results
 
 
-def load(cat: pandas.DataFrame=catalouge, **kwargs):
+def load(cat: pandas.DataFrame=catalogue, **kwargs):
     """
     Load a single variable
 
