@@ -15,14 +15,47 @@
 # limitations under the License.
 
 """
-The Aus400 catalogue
+Tools for filtering and loading from the Aus400 catalogue
 
-.. py:data:: catalouge
+.. py:data:: catalogue
     :type: pandas.DataFrame
 
-    The full Aus400 catalouge, as a :class:`pandas.DataFrame`. This catalogue
+    The full Aus400 catalogue, as a :class:`pandas.DataFrame`. This catalogue
     may be filtered using :meth:`filter_catalogue`, or the matching files
     opened as :obj:`xarray.Dataset` with :meth:`load` or :meth:`load_all`.
+
+    The catalogue has the following columns:
+    
+    runid
+        Experiment run name (e.g. u-bq574)
+
+    resolution
+        Data resolution (e.g. d0036) - A 'd' then the grid spacing in
+        ten-thousandths of a degree
+
+    ensemble
+        Ensemble member
+
+    stream
+        Output stream (fx, cldrad, mdl, slv or spec)
+
+    variable
+        BARRA variable name
+
+    time
+        First timestamp in the file
+
+    path
+        Path to the file
+
+    standard_name
+        CF standard name
+
+    description
+        Description of the variable
+
+    methods
+        Variable processing
 """
 
 import pandas
@@ -58,7 +91,7 @@ def filter_catalogue(cat: pandas.DataFrame=catalogue, **kwargs):
         ensemble (int): Ensemble member to select
         stream (str): Output stream to select
         variable (str): Variable name to select
-        **kwargs: Any other column from :data:`catalouge`
+        **kwargs: Any other column from :data:`catalogue`
 
     Returns:
         A filtered view of the catalogue
