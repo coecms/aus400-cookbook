@@ -1,3 +1,6 @@
+# NOTE: This Conda environment is primarily for automated testing, at NCI use
+# the 'analysis3' environment
+
 name: aus400-cookbook
 channels:
     - coecms
