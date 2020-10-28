@@ -3,6 +3,7 @@ channels:
     - coecms
     - conda-forge
 dependencies:
+    - python >= 3.8
     - climtas
     - xarray
     - pandas
