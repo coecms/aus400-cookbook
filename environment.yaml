@@ -1,0 +1,8 @@
+name: aus400-cookbook
+channels:
+    - coecms
+    - conda-forge
+dependencies:
+    - climtas
+    - xarray
+    - pandas

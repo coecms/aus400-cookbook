@@ -1,0 +1,29 @@
+aus400 package
+==============
+
+Submodules
+----------
+
+aus400.cat module
+-----------------
+
+.. automodule:: aus400.cat
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+aus400.regrid module
+--------------------
+
+.. automodule:: aus400.regrid
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: aus400
+   :members:
+   :undoc-members:
+   :show-inheritance:
