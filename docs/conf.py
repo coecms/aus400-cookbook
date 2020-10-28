@@ -29,6 +29,8 @@ author = 'Scott Wales'
 # ones.
 extensions = [
         'sphinx.ext.autodoc',
+        'sphinx.ext.napoleon',
+        'sphinx.ext.intersphinx',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -51,3 +53,13 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3", None),
+    "xarray": ("http://xarray.pydata.org/en/stable/", None),
+    "dask": ("https://docs.dask.org/en/stable/", None),
+    "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
+    "scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
+    "numpy": ("https://numpy.org/doc/1.18/", None),
+    }

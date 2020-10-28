@@ -21,8 +21,8 @@ The Aus400 catalogue
     :type: pandas.DataFrame
 
     The full Aus400 catalouge, as a :class:`pandas.DataFrame`. This catalogue
-    may be filtered using :meth:`filter_catalogue`, or files opened as
-    :class:`xarray.DataSet`s with :meth:`load` or :meth:`load_all`.
+    may be filtered using :meth:`filter_catalogue`, or the matching files
+    opened as :obj:`xarray.Dataset` with :meth:`load` or :meth:`load_all`.
 """
 
 import pandas
