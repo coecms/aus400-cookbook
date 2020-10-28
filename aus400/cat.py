@@ -22,6 +22,9 @@ root = Path("/g/data/ia89/aus400")
 
 
 def load_catalogue():
+    if not root.exists():
+        return None
+
     cat = pandas.read_csv(root / "catalogue.csv")
     var = pandas.read_csv(root / "variables.csv")
 
