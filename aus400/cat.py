@@ -86,7 +86,7 @@ def filter_catalogue(cat: pandas.DataFrame=catalogue, **kwargs):
     complex filtering is required a different source may be provided.
 
     Args:
-        catalogue: Source catalogue (default :data:`catalogue`)
+        cat: Source catalogue (default :data:`catalogue`)
         resolution ('d0036' or 'd0198'): Resolution to select
         ensemble (int): Ensemble member to select
         stream (str): Output stream to select

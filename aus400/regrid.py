@@ -57,7 +57,7 @@ def to_d0198(data: xarray.Dataset):
     Regrid an Aus400 variable to the 2.2km t (scalar) grid
 
     Args:
-        data: Variable to identify
+        data: Variable to regrid
 
     Returns:
         :obj:`xarray.Dataset` with 'data' on the 'd0198t' grid
@@ -77,7 +77,7 @@ def to_barra(data: xarray.Dataset):
     Regrid an Aus400 variable to the BARRA t (scalar) grid
 
     Args:
-        data: Variable to identify
+        data: Variable to regrid
 
     Returns:
         :obj:`xarray.Dataset` with 'data' on the 'barrat' grid
