@@ -18,15 +18,17 @@ import xarray
 from climtas.regrid import regrid
 from .cat import root
 
-def identify_grid(data):
-    res = data.attrs['resolution']
-    grid = 't'
 
-    return f'{res}{grid}'
+def identify_grid(data):
+    res = data.attrs["resolution"]
+    grid = "t"
+
+    return f"{res}{grid}"
+
 
 def to_d0198(data):
     grid = identify_grid(data)
 
-    weights = xarray.open_dataset(root / 'grids' / f'weights_{grid}_to_d0198t.nc')
+    weights = xarray.open_dataset(root / "grids" / f"weights_{grid}_to_d0198t.nc")
 
     return regrid(data, weights=weights)
