@@ -3,7 +3,10 @@ aus400-cookbook
 
 .. image:: https://readthedocs.org/projects/aus400-cookbook/badge/?version=latest
     :target: https://aus400-cookbook.readthedocs.io/en/latest/?badge=latest
-    :alt: Documentation Status
+    :alt: Documentation
+.. image:: https://zenodo.org/badge/288881176.svg
+    :target: https://zenodo.org/badge/latestdoi/288881176
+    :alt: DOI
 
 Notebooks and library for working with Aus400 data 
 
