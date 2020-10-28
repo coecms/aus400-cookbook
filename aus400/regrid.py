@@ -54,7 +54,7 @@ def identify_grid(data: xarray.Dataset):
 
 def to_d0198(data: xarray.Dataset):
     """
-    Regrid an Aus400 variable to 2.2km
+    Regrid an Aus400 variable to the 2.2km t (scalar) grid
 
     Args:
         data: Variable to identify
@@ -68,5 +68,25 @@ def to_d0198(data: xarray.Dataset):
         return data
 
     weights = xarray.open_dataset(root / "grids" / f"weights_{grid}_to_d0198t.nc")
+
+    return regrid(data, weights=weights)
+
+
+def to_barra(data: xarray.Dataset):
+    """
+    Regrid an Aus400 variable to the BARRA t (scalar) grid
+
+    Args:
+        data: Variable to identify
+
+    Returns:
+        :obj:`xarray.Dataset` with 'data' on the 'barrat' grid
+    """
+    grid = identify_grid(data)
+
+    if grid == "d0198t":
+        return data
+
+    weights = xarray.open_dataset(root / "grids" / f"weights_{grid}_to_barrat.nc")
 
     return regrid(data, weights=weights)
