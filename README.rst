@@ -1,6 +1,10 @@
 aus400-cookbook
 ===============
 
+.. image:: https://readthedocs.org/projects/aus400-cookbook/badge/?version=latest
+    :target: https://aus400-cookbook.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
+
 Notebooks and library for working with Aus400 data 
 
 Aus400 is a large-scale high resolution simulation of the atmosphere over the
