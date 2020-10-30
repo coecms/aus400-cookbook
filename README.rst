@@ -38,3 +38,18 @@ Sample Notebooks
 `Introduction to the Cookbook <https://nbviewer.jupyter.org/github/coecms/aus400-cookbook/blob/master/notebooks/Introduction.ipynb>`_
 
 `Rendering the 400m domain using pillow <https://nbviewer.jupyter.org/github/coecms/aus400-cookbook/blob/master/notebooks/Rendering.ipynb>`_
+
+Using the Cookbook
+------------------
+
+Download the repository to Gadi or VDI::
+
+    git clone https://github.com/coecms/aus400-cookbook
+
+Open a Jupyter notebook (e.g. using `gadi_jupyter or vdi_jupyter.py <https://github.com/coecms/nci_scripts>`_)
+
+Navigate to the repository's notebooks directory, and start your notebook with::
+
+    import sys
+    sys.path.append('../')
+    import aus400
