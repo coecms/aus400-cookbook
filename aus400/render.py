@@ -42,7 +42,7 @@ def field_to_image(field: xarray.DataArray, vmin: float=None, vmax: float=None):
         vmax: Maximum value for normalisation
 
     Returns:
-        PIL.Image in mode 'L'
+        :obj:`PIL.Image.Image` in mode 'L'
     """
 
     if field.ndim != 2:
@@ -61,7 +61,7 @@ def field_to_image(field: xarray.DataArray, vmin: float=None, vmax: float=None):
 		.transpose(PIL.Image.FLIP_TOP_BOTTOM))
 
 
-def set_image_mpl_cmap(image: PIL.Image, cmap: str):
+def set_image_mpl_cmap(image: PIL.Image.Image, cmap: str):
     """
     Set a PIL.Image to use a matplotlib colour map
     
@@ -77,7 +77,7 @@ def set_image_mpl_cmap(image: PIL.Image, cmap: str):
     image.putpalette(pallet, 'RGB')
 
 
-def zoom_region(image: PIL.Image, lat: float, lon: float, scale: float, size: Tuple[int, int]):
+def zoom_region(image: PIL.Image.Image, lat: float, lon: float, scale: float, size: Tuple[int, int]):
     """
     Zooms to a specific region of an Aus400 rendered image
 
@@ -92,7 +92,7 @@ def zoom_region(image: PIL.Image, lat: float, lon: float, scale: float, size: Tu
         size: Output image size in pixels
 
     Returns:
-        PIL.Image with size 'size'
+        :obj:`PIL.Image.Image` with size 'size'
     """
 
     if image.size != (13194, 10554):
