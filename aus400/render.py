@@ -19,6 +19,7 @@ Functions for rendering Aus400 data using Pillow
 """
 
 import PIL
+import xarray
 from typing import Tuple
 
 def to_bytes(array):
@@ -80,15 +81,15 @@ def zoom_region(image: PIL.Image, lat: float, lon: float, scale: float, size: Tu
     """
     Zooms to a specific region of an Aus400 rendered image
 
-    The output image is 'scale' degrees wide, with the height determined by the
-    aspect ratio of 'size'
+    The output image is centred at (lat, lon), is 'scale' degrees wide, with
+    the height determined by the aspect ratio of 'size'
 
     Args:
         image: Source image, must cover the full d0036t grid
         lat: Central latitude
         lon: Central longitude
         scale: Output longitude width in degrees
-        size: Output image size
+        size: Output image size in pixels
 
     Returns:
         PIL.Image with size 'size'
