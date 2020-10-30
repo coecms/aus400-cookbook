@@ -36,3 +36,5 @@ Sample Notebooks
 ----------------
 
 `Introduction to the Cookbook <https://nbviewer.jupyter.org/github/coecms/aus400-cookbook/blob/master/notebooks/Introduction.ipynb>`_
+
+`Rendering the 400m domain using pillow <https://nbviewer.jupyter.org/github/coecms/aus400-cookbook/blob/master/notebooks/Rendering.ipynb>`_
