@@ -37,3 +37,20 @@ def test_id_grid():
 
     assert identify_grid(ds) == 'd0198v'
     assert identify_grid(ds['vwnd10m']) == 'd0198v'
+
+
+def test_to_d0198():
+    ds = load(resolution='d0036', stream='spec', variable='uwnd10m', ensemble=0, time='20170328T1200')
+
+    ds = to_d0198(ds)
+
+    assert identify_grid(ds) == 'd0198t'
+
+
+def test_to_t():
+    ds = load(resolution='d0036', stream='spec', variable='uwnd10m', ensemble=0, time='20170328T1200')
+
+    ds = to_t(ds)
+
+    assert identify_grid(ds) == 'd0036t'
+
