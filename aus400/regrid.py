@@ -110,9 +110,28 @@ def to_barra(data: xarray.Dataset):
     """
     grid = identify_grid(data)
 
-    if grid == "d0198t":
+    weights = xarray.open_dataset(root / "grids" / f"weights_{grid}_to_barrat.nc")
+
+    return regrid(data, weights=weights)
+
+
+def to_t(data: xarray.Dataset):
+    """
+    Regrid an Aus400 variable on the u or v vector component grids to the t scalar grid
+
+    Args:
+        data: Variable to regrid
+
+    Returns:
+        :obj:`xarray.Dataset` with 'data' on the 't' grid at the same resolution
+    """
+    grid = identify_grid(data)
+
+    if grid.endswith("t"):
         return data
 
-    weights = xarray.open_dataset(root / "grids" / f"weights_{grid}_to_barrat.nc")
+    res = grid[0:5]
+
+    weights = xarray.open_dataset(root / "grids" / f"weights_{grid}_to_{res}t.nc")
 
     return regrid(data, weights=weights)
