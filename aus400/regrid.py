@@ -34,6 +34,21 @@ dataset, for use by e.g. ESMF_RegridWeightGen.
 import xarray
 from climtas.regrid import regrid
 from .cat import root
+import numpy
+
+
+def _identify_subgrid(lat_offset, lon_offset, delta):
+    lat_offset = numpy.mod(lat_offset, delta)
+    lon_offset = numpy.mod(lon_offset, delta)
+
+    if abs(lon_offset - delta/2) < 0.0001:
+        grid = 'u'
+    elif abs(lat_offset - delta/2) < 0.0001:
+        grid = 'v'
+    else:
+        grid = 't'
+
+    return grid
 
 
 def identify_grid(data: xarray.Dataset):
@@ -46,8 +61,19 @@ def identify_grid(data: xarray.Dataset):
     Returns:
         :obj:`str` with grid id of 'data'
     """
-    res = data.attrs["resolution"]
-    grid = "t"
+
+    dlat = data['latitude'].values[1] - data['latitude'].values[0]
+
+    res = f'd{round(dlat*10000):04d}'
+
+    if res not in ['d0198','d0036']:
+        raise Exception(f"Unknown grid: spacing {dlat}")
+
+    # Subtract centre of domain
+    lat_offset = data['latitude'].values[0] - -27.8
+    lon_offset = data['longitude'].values[0] - 133.26
+
+    grid = _identify_subgrid(lat_offset, lon_offset, round(dlat*10000)/10000)
 
     return f"{res}{grid}"
 
