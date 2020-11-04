@@ -156,12 +156,13 @@ def load_all(cat: pandas.DataFrame=catalogue, **kwargs):
 
         if len(dss) > 1:
             ds = xarray.concat(dss, dim="ensemble")
-            ds["ensemble"] = ens
+            ds.coords["ensemble"] = ens
         else:
-            ds = dss[0]
+            ds.coords["ensemble"] = ens[0]
+            ds = ds.expand_dims("ensemble",0)
 
-        ds.attrs["resolution"] = res
-        ds.attrs["stream"] = stream
+        ds[var].attrs["resolution"] = res
+        ds[var].attrs["stream"] = stream
 
         results[name] = ds
 
