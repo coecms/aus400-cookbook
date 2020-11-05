@@ -19,9 +19,15 @@ from ..cat import load
 
 
 def test_to_plev():
-    ds = load(resolution='d0198', stream='mdl', variable='air_temp', ensemble=0, time='20170328T1200')
+    ds = load(
+        resolution="d0198",
+        stream="mdl",
+        variable="air_temp",
+        ensemble=0,
+        time="20170328T1200",
+    )
 
-    ds_p = to_plev(ds['air_temp'], [10000])
+    ds_p = to_plev(ds["air_temp"], [10000])
 
-    assert 'pressure' in ds_p.dims
-    assert ds_p['pressure'].size == 1
+    assert "pressure" in ds_p.dims
+    assert ds_p["pressure"].size == 1

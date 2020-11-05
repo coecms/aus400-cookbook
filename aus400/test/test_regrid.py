@@ -17,23 +17,48 @@
 from ..regrid import *
 from ..cat import load
 
+
 def test_id_grid():
-    ds = load(resolution='d0036', stream='spec', variable='sfc_temp', ensemble=0, time='20170328T1200')
+    ds = load(
+        resolution="d0036",
+        stream="spec",
+        variable="sfc_temp",
+        ensemble=0,
+        time="20170328T1200",
+    )
 
-    assert identify_grid(ds) == 'd0036t'
-    assert identify_grid(ds['sfc_temp']) == 'd0036t'
+    assert identify_grid(ds) == "d0036t"
+    assert identify_grid(ds["sfc_temp"]) == "d0036t"
 
-    ds = load(resolution='d0036', stream='spec', variable='uwnd10m', ensemble=0, time='20170328T1200')
+    ds = load(
+        resolution="d0036",
+        stream="spec",
+        variable="uwnd10m",
+        ensemble=0,
+        time="20170328T1200",
+    )
 
-    assert identify_grid(ds) == 'd0036u'
-    assert identify_grid(ds['uwnd10m']) == 'd0036u'
+    assert identify_grid(ds) == "d0036u"
+    assert identify_grid(ds["uwnd10m"]) == "d0036u"
 
-    ds = load(resolution='d0036', stream='spec', variable='vwnd10m', ensemble=0, time='20170328T1200')
+    ds = load(
+        resolution="d0036",
+        stream="spec",
+        variable="vwnd10m",
+        ensemble=0,
+        time="20170328T1200",
+    )
 
-    assert identify_grid(ds) == 'd0036v'
-    assert identify_grid(ds['vwnd10m']) == 'd0036v'
+    assert identify_grid(ds) == "d0036v"
+    assert identify_grid(ds["vwnd10m"]) == "d0036v"
 
-    ds = load(resolution='d0198', stream='spec', variable='vwnd10m', ensemble=0, time='20170328T1200')
+    ds = load(
+        resolution="d0198",
+        stream="spec",
+        variable="vwnd10m",
+        ensemble=0,
+        time="20170328T1200",
+    )
 
-    assert identify_grid(ds) == 'd0198v'
-    assert identify_grid(ds['vwnd10m']) == 'd0198v'
+    assert identify_grid(ds) == "d0198v"
+    assert identify_grid(ds["vwnd10m"]) == "d0198v"

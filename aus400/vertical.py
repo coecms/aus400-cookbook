@@ -18,6 +18,7 @@ from .cat import load
 from . import xgcm
 from .regrid import identify_resolution, identify_subgrid
 import xarray
+import pandas
 
 
 def vertical_interp(
@@ -67,7 +68,18 @@ def to_plev(ds, levels):
             f"Can't vertically regrid data on '{sub}' grid, regrid to 't' first"
         )
 
-    pressure = load(resolution=res, stream="mdl", variable="pressure")["pressure"]
+    pressure = load(
+        resolution=res,
+        stream="mdl",
+        variable="pressure",
+        time=slice(
+            pandas.offsets.Hour().rollback(ds["time"].values[0])
+            - pandas.offsets.Hour(),
+            pandas.offsets.Hour().rollback(ds["time"].values[-1])
+            + pandas.offsets.Hour(),
+        ),
+        ensemble=slice(ds["ensemble"].values[0], ds["ensemble"].values[-1]),
+    )["pressure"]
 
     return vertical_interp(ds, pressure, levels)
 
