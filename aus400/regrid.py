@@ -37,7 +37,23 @@ from .cat import root
 import numpy
 
 
-def _identify_subgrid(lat_offset, lon_offset, delta):
+def identify_subgrid(data):
+    """
+    Identify the subgrid of an Aus400 variable
+
+    Args:
+        data: Variable to identify
+
+    Returns:
+        :obj:`str` with subgrid id of data ('t','u' or 'v')
+    """
+    dlat = data['latitude'].values[1] - data['latitude'].values[0]
+    delta = round(dlat * 10000) / 10000
+
+    # Subtract centre of domain
+    lat_offset = data['latitude'].values[0] - -27.8
+    lon_offset = data['longitude'].values[0] - 133.26
+
     lat_offset = numpy.mod(lat_offset, delta)
     lon_offset = numpy.mod(lon_offset, delta)
 
@@ -51,6 +67,27 @@ def _identify_subgrid(lat_offset, lon_offset, delta):
     return grid
 
 
+def identify_resolution(data: xarray.Dataset):
+    """
+    Identify the resolution of an Aus400 variable
+
+    Args:
+        data: Variable to identify
+
+    Returns:
+        :obj:`str` with resolution id of 'data'
+    """
+
+    dlat = data['latitude'].values[1] - data['latitude'].values[0]
+
+    res = f'd{round(dlat*10000):04d}'
+
+    if res not in ['d0198','d0036']:
+        raise Exception(f"Unknown grid: spacing {dlat}")
+
+    return res
+
+
 def identify_grid(data: xarray.Dataset):
     """
     Identify the grid of an Aus400 variable
@@ -62,18 +99,9 @@ def identify_grid(data: xarray.Dataset):
         :obj:`str` with grid id of 'data'
     """
 
-    dlat = data['latitude'].values[1] - data['latitude'].values[0]
 
-    res = f'd{round(dlat*10000):04d}'
-
-    if res not in ['d0198','d0036']:
-        raise Exception(f"Unknown grid: spacing {dlat}")
-
-    # Subtract centre of domain
-    lat_offset = data['latitude'].values[0] - -27.8
-    lon_offset = data['longitude'].values[0] - 133.26
-
-    grid = _identify_subgrid(lat_offset, lon_offset, round(dlat*10000)/10000)
+    res = identify_resolution(data)
+    grid = identify_subgrid(data)
 
     return f"{res}{grid}"
 

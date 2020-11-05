@@ -25,7 +25,7 @@ Tools for filtering and loading from the Aus400 catalogue
     opened as :obj:`xarray.Dataset` with :meth:`load` or :meth:`load_all`.
 
     The catalogue has the following columns:
-    
+
     runid
         Experiment run name (e.g. u-bq574)
 
@@ -69,7 +69,7 @@ def load_catalogue():
     if not root.exists():
         return None
 
-    cat = pandas.read_csv(root / "catalogue.csv")
+    cat = pandas.read_csv(root / "catalogue.csv", parse_dates=["time"])
     var = pandas.read_csv(root / "variables.csv")
 
     return cat.merge(var, on=["variable", "stream"])
@@ -78,7 +78,7 @@ def load_catalogue():
 catalogue = load_catalogue()
 
 
-def filter_catalogue(cat: pandas.DataFrame=catalogue, **kwargs):
+def filter_catalogue(cat: pandas.DataFrame = catalogue, **kwargs):
     """
     Returns a filtered view of the catalogue
 
@@ -99,12 +99,21 @@ def filter_catalogue(cat: pandas.DataFrame=catalogue, **kwargs):
     c = cat
 
     for k, v in kwargs.items():
-        c = c[c[k] == v]
+        if isinstance(v, slice):
+            # Handle slices
+            s = c[k]
+            s_index = pandas.Series(s.index, index=s.values).sort_index()
+            c = c.loc[s_index.loc[v]]
+        else:
+            c = c.loc[c[k] == v]
+
+    if isinstance(c, pandas.Series):
+        c = c.to_frame().T
 
     return c
 
 
-def load_all(cat: pandas.DataFrame=catalogue, **kwargs):
+def load_all(cat: pandas.DataFrame = catalogue, **kwargs):
     """
     Load multiple variables, e.g. from different streams or resolutions
 
@@ -155,20 +164,21 @@ def load_all(cat: pandas.DataFrame=catalogue, **kwargs):
             dss.append(ds)
 
         if len(dss) > 1:
-            ds = xarray.concat(dss, dim="ensemble")
-            ds["ensemble"] = ens
+            ds = xarray.concat(dss, dim="ensemble", coords="minimal", compat="override")
+            ds.coords["ensemble"] = ens
         else:
-            ds = dss[0]
+            ds.coords["ensemble"] = ens[0]
+            ds = ds.expand_dims("ensemble", 0)
 
-        ds.attrs["resolution"] = res
-        ds.attrs["stream"] = stream
+        ds[var].attrs["resolution"] = res
+        ds[var].attrs["stream"] = stream
 
         results[name] = ds
 
     return results
 
 
-def load(cat: pandas.DataFrame=catalogue, **kwargs):
+def load(cat: pandas.DataFrame = catalogue, **kwargs):
     """
     Load a single variable
 
@@ -186,7 +196,8 @@ def load(cat: pandas.DataFrame=catalogue, **kwargs):
 
     if len(results) > 1:
         raise ValueError(
-            "Selection contains multiple results, refine the filter or use the 'load_all()' function"
+            "Selection contains multiple results, refine the filter or use the "
+            + "'load_all()' function"
         )
 
     return list(results.values())[0]

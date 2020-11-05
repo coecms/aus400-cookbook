@@ -39,6 +39,8 @@ Sample Notebooks
 
 `Rendering the 400m domain using pillow <https://nbviewer.jupyter.org/github/coecms/aus400-cookbook/blob/master/notebooks/Rendering.ipynb>`_
 
+`Vertical Interpolation <https://nbviewer.jupyter.org/github/coecms/aus400-cookbook/blob/master/notebooks/VerticalInterpolation.ipynb>`_
+
 Using the Cookbook
 ------------------
 
