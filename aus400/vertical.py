@@ -17,36 +17,57 @@
 from .cat import load
 from . import xgcm
 from .regrid import identify_resolution, identify_subgrid
+import xarray
 
-def vertical_interp(ds, source, target):
+
+def vertical_interp(
+    ds: xarray.DataArray, source: xarray.DataArray, target
+) -> xarray.DataArray:
     """
     Vertically interpolate the data in ds to the levels of 'target'
+
+    See also: :func:`to_plev`, :func:`to_height`
+
+    Args:
+        da: Aus400 variable to regrid
+        source: Aus400 variable with the source level values (e.g.
+            pressure, height)
+        target: Target levels to regrid to
+
+    Returns:
+        :obj:`xarray.DataArray` on the target levels
     """
 
     grid = xgcm.grid(ds)
     source = match_slice(source, ds)
 
-    ds = ds.chunk({'model_level_number': None})
-    source = source.chunk({'model_level_number': None})
+    ds = ds.chunk({"model_level_number": None})
+    source = source.chunk({"model_level_number": None})
 
-    print(ds)
-    print(source)
-
-    return grid.transform(ds, 'Z', target, target_data=source)
+    return grid.transform(ds, "Z", target, target_data=source)
 
 
 def to_plev(ds, levels):
     """
     Interpolate the data in ds to the supplied pressure levels
+
+    Args:
+        da: Aus400 variable to regrid
+        target: Target levels to regrid to
+
+    Returns:
+        :obj:`xarray.DataArray` on the target levels
     """
 
     res = identify_resolution(ds)
     sub = identify_subgrid(ds)
 
-    if sub != 't':
-        raise Exception(f"Can't vertically regrid data on '{sub}' grid, regrid to 't' first")
+    if sub != "t":
+        raise Exception(
+            f"Can't vertically regrid data on '{sub}' grid, regrid to 't' first"
+        )
 
-    pressure = load(resolution=res, stream='mdl', variable='pressure')['pressure']
+    pressure = load(resolution=res, stream="mdl", variable="pressure")["pressure"]
 
     return vertical_interp(ds, pressure, levels)
 
@@ -54,15 +75,24 @@ def to_plev(ds, levels):
 def to_height(ds, levels):
     """
     Interpolate the data in ds to the supplied height levels
+
+    Args:
+        da: Aus400 variable to regrid
+        target: Target levels to regrid to
+
+    Returns:
+        :obj:`xarray.DataArray` on the target levels
     """
 
     res = identify_resolution(ds)
     sub = identify_subgrid(ds)
 
-    if sub != 't':
-        raise Exception(f"Can't vertically regrid data on '{sub}' grid, regrid to 't' first")
+    if sub != "t":
+        raise Exception(
+            f"Can't vertically regrid data on '{sub}' grid, regrid to 't' first"
+        )
 
-    height = load(resolution=res, stream='fx', variable='height_rho')['height_rho']
+    height = load(resolution=res, stream="fx", variable="height_rho")["height_rho"]
 
     return vertical_interp(ds, height, levels)
 
@@ -71,7 +101,5 @@ def match_slice(da, target):
     """
     Match da to the slicing of target
     """
-    
+
     return da.sel({d: target[d] for d in da.dims})
-
-

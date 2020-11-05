@@ -1,0 +1,9 @@
+{
+    "python.pythonPath": "/scratch/w35/saw562/conda/envs/dev/bin/python",
+    "python.testing.pytestArgs": [
+        "aus400"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.nosetestsEnabled": false,
+    "python.testing.pytestEnabled": true
+}
