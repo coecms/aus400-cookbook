@@ -25,3 +25,10 @@ aus400.render
 .. automodule:: aus400.render
    :members:
    :show-inheritance:
+
+aus400.vertical
+---------------
+
+.. automodule:: aus400.vertical
+   :members:
+   :show-inheritance:
