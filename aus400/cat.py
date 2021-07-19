@@ -178,7 +178,7 @@ def load_all(cat: pandas.DataFrame = catalogue, **kwargs):
     return results
 
 
-def load(cat: pandas.DataFrame = catalogue, **kwargs):
+def load(cat: pandas.DataFrame = catalogue, **kwargs) -> xarray.Dataset:
     """
     Load a single variable
 
@@ -201,3 +201,21 @@ def load(cat: pandas.DataFrame = catalogue, **kwargs):
         )
 
     return list(results.values())[0]
+
+
+def load_var(variable, cat: pandas.DataFrame = catalogue, **kwargs) -> xarray.DataArray:
+    """
+    Load a single variable as a DataArray
+
+    Arguments should be used to narrow down what gets loaded from the full
+    catalogue
+
+    Args:
+        **kwargs: See :meth:`filter_catalogue`
+
+    Returns:
+        :obj:`xarray.Dataset`
+    """
+
+    ds = load(cat, variable=variable, **kwargs)
+    return ds[variable]
