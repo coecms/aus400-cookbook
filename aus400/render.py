@@ -21,6 +21,7 @@ Functions for rendering Aus400 data using Pillow
 import PIL
 import xarray
 from typing import Tuple
+import numpy
 
 def to_bytes(array):
     """

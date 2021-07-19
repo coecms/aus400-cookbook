@@ -19,6 +19,7 @@ from . import xgcm
 from .regrid import identify_resolution, identify_subgrid
 import xarray
 import pandas
+from .cross_sec import cross_sec
 
 
 def vertical_interp(
@@ -79,7 +80,19 @@ def to_plev(ds, levels):
             + pandas.offsets.Hour(),
         ),
         ensemble=slice(ds["ensemble"].values[0], ds["ensemble"].values[-1]),
-    )["pressure"]
+    )["pressure"]         
+
+    # may need to c.s. data if the input is also c.s.
+    if 'horz_dim' in ds.dims:
+        x0, x1 = ds['longitude'].values[0], ds['longitude'].values[-1]
+        y0, y1 = ds['latitude'].values[0], ds['latitude'].values[-1]
+        pressure = cross_sec(pressure, x0, y0, x1, y1)
+    else:
+        # cut lats/lons to that of input
+        pressure = pressure.sel(latitude=slice(min(ds.latitude), max(ds.latitude)))
+        pressure = pressure.sel(longitude=slice(min(ds.longitude), max(ds.longitude)))        
+
+    pressure = xarray.broadcast(ds, pressure)[1]
 
     return vertical_interp(ds, pressure, levels)
 
@@ -95,7 +108,7 @@ def to_height(ds, levels):
     Returns:
         :obj:`xarray.DataArray` on the target levels
     """
-
+    
     res = identify_resolution(ds)
     sub = identify_subgrid(ds)
 
@@ -104,7 +117,26 @@ def to_height(ds, levels):
             f"Can't vertically regrid data on '{sub}' grid, regrid to 't' first"
         )
 
-    height = load(resolution=res, stream="fx", variable="height_rho")["height_rho"]
+    #height = load(resolution=res, stream="fx", variable="height_rho")["height_rho"]
+    # quick fix: load directly
+    if res == 'd0198':
+        height = xarray.open_dataarray('/g/data/ia89/aus400/u-bm651/d0198/fx/height_rho.nc')
+    elif res == 'd0036':
+        height = xarray.open_dataarray('/g/data/ia89/aus400/u-bq574/d0036/fx/height_rho.nc')
+    height = height.squeeze()
+
+    # may need to c.s. data if the input is also c.s.
+    if 'horz_dim' in ds.dims:
+        x0, x1 = ds.longitude.values[0], ds.longitude.values[-1]
+        y0, y1 = ds.latitude.values[0], ds.latitude.values[-1]
+        height = cross_sec(height, x0, y0, x1, y1)
+    else:
+        # if input not a c.s., cut lats/lons to that of input
+        height = height.sel(latitude=slice(min(ds.latitude), max(ds.latitude)))
+        height = height.sel(longitude=slice(min(ds.longitude), max(ds.longitude)))        
+
+    # broadcast height (static) to size of input ds
+    height = xarray.broadcast(ds, height)[1]
 
     return vertical_interp(ds, height, levels)
 
