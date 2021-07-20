@@ -1,7 +1,5 @@
-import sys
-sys.path.append('../')
-from cat import load
-from cross_sec import cross_sec
+from ..cat import load
+from ..cross_sec import cross_sec
 
 def test_cross_sec():
 

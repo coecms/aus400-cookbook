@@ -32,3 +32,10 @@ aus400.vertical
 .. automodule:: aus400.vertical
    :members:
    :show-inheritance:
+
+aus400.cross_sec
+----------------
+
+.. automodule:: aus400.cross_sec
+   :members:
+   :show-inheritance:

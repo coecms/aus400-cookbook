@@ -189,18 +189,11 @@ def regrid_vector(data):
     # change this to be consistent
     #grid = grid.rename({'lat': 'latitude', 'lon': 'longitude'})
 
-    grid = load(
+    grid = load_var(
         resolution=res,
-        stream="mdl",
-        variable="pressure",
-        time=slice(
-            pandas.offsets.Hour().rollback(data["time"].values[0])
-            - pandas.offsets.Hour(),
-            pandas.offsets.Hour().rollback(data["time"].values[-1])
-            + pandas.offsets.Hour(),
-        ),
-        ensemble=slice(data["ensemble"].values[0], data["ensemble"].values[-1]),
-    )["pressure"]    
+        stream="fx",
+        variable="lnd_mask",
+    )
 
     # cut lats/lons of grid to that of input
     grid = grid.sel(latitude=slice(min(data.latitude), max(data.latitude)))

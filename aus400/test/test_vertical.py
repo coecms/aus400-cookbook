@@ -16,6 +16,7 @@
 
 from ..vertical import *
 from ..cat import load
+import numpy
 
 
 def test_to_plev():
@@ -27,7 +28,7 @@ def test_to_plev():
         time="20170328T1200",
     )
 
-    ds_p = to_plev(ds["air_temp"], [10000])
+    ds_p = to_plev(ds["air_temp"], numpy.array([10000]))
 
     assert "pressure" in ds_p.dims
     assert ds_p["pressure"].size == 1
