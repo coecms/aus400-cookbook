@@ -16,7 +16,8 @@
 
 from ..xgcm import *
 
+
 def test_grid():
-    gt = grid('d0036t')
+    gt = grid("d0036t")
 
     print(gt)

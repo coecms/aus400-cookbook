@@ -48,22 +48,22 @@ def identify_subgrid(data):
     Returns:
         :obj:`str` with subgrid id of data ('t','u' or 'v')
     """
-    dlat = data['latitude'].values[1] - data['latitude'].values[0]
+    dlat = data["latitude"].values[1] - data["latitude"].values[0]
     delta = round(dlat * 10000) / 10000
 
     # Subtract centre of domain
-    lat_offset = data['latitude'].values[0] - -27.8
-    lon_offset = data['longitude'].values[0] - 133.26
+    lat_offset = data["latitude"].values[0] - -27.8
+    lon_offset = data["longitude"].values[0] - 133.26
 
     lat_offset = numpy.mod(lat_offset, delta)
     lon_offset = numpy.mod(lon_offset, delta)
 
-    if abs(lon_offset - delta/2) < 0.0001:
-        grid = 'u'
-    elif abs(lat_offset - delta/2) < 0.0001:
-        grid = 'v'
+    if abs(lon_offset - delta / 2) < 0.0001:
+        grid = "u"
+    elif abs(lat_offset - delta / 2) < 0.0001:
+        grid = "v"
     else:
-        grid = 't'
+        grid = "t"
 
     return grid
 
@@ -79,18 +79,18 @@ def identify_resolution(data: xarray.Dataset):
         :obj:`str` with resolution id of 'data'
     """
 
-    dlat = abs(data['latitude'].values[1] - data['latitude'].values[0])
+    dlat = abs(data["latitude"].values[1] - data["latitude"].values[0])
 
-    lat_res = f'd{round(dlat*10000):04d}'
+    lat_res = f"d{round(dlat*10000):04d}"
 
     # also consider longitude resolution in the case of cross-sectioned data
     # assuming the no. of points is automatic, at least one of lat/lon should have
     # the same resolution as before
-    dlon = abs(data['longitude'].values[1] - data['longitude'].values[0])
+    dlon = abs(data["longitude"].values[1] - data["longitude"].values[0])
 
-    lon_res = f'd{round(dlon*10000):04d}'    
+    lon_res = f"d{round(dlon*10000):04d}"
 
-    if lat_res not in ['d0198','d0036'] and lon_res not in ['d0198','d0036']:
+    if lat_res not in ["d0198", "d0036"] and lon_res not in ["d0198", "d0036"]:
         raise Exception(f"Unknown grid: spacing {dlat} {dlon}")
 
     return max(lat_res, lon_res)
@@ -106,7 +106,6 @@ def identify_grid(data: xarray.Dataset):
     Returns:
         :obj:`str` with grid id of 'data'
     """
-
 
     res = identify_resolution(data)
     grid = identify_subgrid(data)
@@ -154,7 +153,6 @@ def to_barra(data: xarray.Dataset):
     return regrid(data, weights=weights)
 
 
-
 def regrid_vector(data):
     """
     Redrigs vector quantities like u/v defined on grid edges to the
@@ -171,13 +169,12 @@ def regrid_vector(data):
         data_regrid: regridded data
     """
 
-    res = identify_resolution(data)        
+    res = identify_resolution(data)
 
     # load the grid to reshape input data to
     # note: for now we are using pressure as a dummy variable to get the target grid
     # for some reason, the d0198t/d0036t grids are very slightly different from the
     # actual grid for these variables (offest by around 10e-6)
-
 
     # grid_path = '/g/data/ia89/aus400/grids/'
     # if res == 'd0036':
@@ -187,7 +184,7 @@ def regrid_vector(data):
 
     # note: dims are called lat/lon on the grid but latitude/longitude on the input
     # change this to be consistent
-    #grid = grid.rename({'lat': 'latitude', 'lon': 'longitude'})
+    # grid = grid.rename({'lat': 'latitude', 'lon': 'longitude'})
 
     grid = load_var(
         resolution=res,

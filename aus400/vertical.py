@@ -82,11 +82,10 @@ def to_plev(ds, levels):
         ensemble=slice(ds["ensemble"].values[0], ds["ensemble"].values[-1]),
     )
 
-
     # may need to c.s. data if the input is also c.s.
-    if 'horz_dim' in ds.dims:
-        x0, x1 = ds['longitude'].values[0], ds['longitude'].values[-1]
-        y0, y1 = ds['latitude'].values[0], ds['latitude'].values[-1]
+    if "horz_dim" in ds.dims:
+        x0, x1 = ds["longitude"].values[0], ds["longitude"].values[-1]
+        y0, y1 = ds["latitude"].values[0], ds["latitude"].values[-1]
         pressure = cross_sec(pressure, x0, y0, x1, y1)
 
     return vertical_interp(ds, pressure, levels)
@@ -103,7 +102,7 @@ def to_height(ds, levels):
     Returns:
         :obj:`xarray.DataArray` on the target levels
     """
-    
+
     res = identify_resolution(ds)
     sub = identify_subgrid(ds)
 
@@ -115,7 +114,7 @@ def to_height(ds, levels):
     height = load_var(resolution=res, stream="fx", variable="height_rho")
 
     # may need to c.s. data if the input is also c.s.
-    if 'horz_dim' in ds.dims:
+    if "horz_dim" in ds.dims:
         x0, x1 = ds.longitude.values[0], ds.longitude.values[-1]
         y0, y1 = ds.latitude.values[0], ds.latitude.values[-1]
         height = cross_sec(height, x0, y0, x1, y1)

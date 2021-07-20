@@ -22,6 +22,7 @@ from .cat import root
 import xarray
 import xgcm
 
+
 def grid_from_id(g):
     """
     XGCM representation of Aus400 grid 'g'
@@ -33,14 +34,14 @@ def grid_from_id(g):
     ds = xarray.open_dataset(root / "grids" / f"{g}.nc")
 
     coords = {
-        'X': {'center': 'longitude'},
-        'Y': {'center': 'latitude'},
-        }
+        "X": {"center": "longitude"},
+        "Y": {"center": "latitude"},
+    }
 
-    if subt == 'u':
-        coords['X'] = {'left': 'longitude'}
-    elif subt == 'v':
-        coords['Y'] = {'left': 'latitude'}
+    if subt == "u":
+        coords["X"] = {"left": "longitude"}
+    elif subt == "v":
+        coords["Y"] = {"left": "latitude"}
 
     return xgcm.Grid(ds, coords)
 
@@ -49,13 +50,13 @@ def grid(ds):
     """
     XGCM grid of Aus400 variable 'ds'
     """
-    
-    coords = {
-        'X': {'center': 'latitude'},
-        'Y': {'center': 'latitude'},
-        }
 
-    if 'model_level_number' in ds.coords:
-        coords['Z'] = {'center': 'model_level_number'}
+    coords = {
+        "X": {"center": "latitude"},
+        "Y": {"center": "latitude"},
+    }
+
+    if "model_level_number" in ds.coords:
+        coords["Z"] = {"center": "model_level_number"}
 
     return xgcm.Grid(ds, coords=coords, periodic=False)
