@@ -72,7 +72,7 @@ def load_catalogue():
     cat = pandas.read_csv(root / "catalogue.csv", parse_dates=["time"])
     var = pandas.read_csv(root / "variables.csv")
 
-    return cat.merge(var, on=["variable", "stream"])
+    return cat.merge(var, on=["variable", "stream"], how='left')
 
 
 catalogue = load_catalogue()
@@ -173,12 +173,16 @@ def load_all(cat: pandas.DataFrame = catalogue, **kwargs):
         ds[var].attrs["resolution"] = res
         ds[var].attrs["stream"] = stream
 
+        # Remove time from fx variables
+        if stream == 'fx':
+            ds = ds.squeeze(['time', 'ensemble'], drop=True)
+
         results[name] = ds
 
     return results
 
 
-def load(cat: pandas.DataFrame = catalogue, **kwargs):
+def load(cat: pandas.DataFrame = catalogue, **kwargs) -> xarray.Dataset:
     """
     Load a single variable
 
@@ -201,3 +205,21 @@ def load(cat: pandas.DataFrame = catalogue, **kwargs):
         )
 
     return list(results.values())[0]
+
+
+def load_var(variable, cat: pandas.DataFrame = catalogue, **kwargs) -> xarray.DataArray:
+    """
+    Load a single variable as a DataArray
+
+    Arguments should be used to narrow down what gets loaded from the full
+    catalogue
+
+    Args:
+        **kwargs: See :meth:`filter_catalogue`
+
+    Returns:
+        :obj:`xarray.Dataset`
+    """
+
+    ds = load(cat, variable=variable, **kwargs)
+    return ds[variable]
