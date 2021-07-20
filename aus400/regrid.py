@@ -33,8 +33,9 @@ dataset, for use by e.g. ESMF_RegridWeightGen.
 
 import xarray
 from climtas.regrid import regrid
-from .cat import root
+from .cat import root, load
 import numpy
+import pandas
 
 
 def identify_subgrid(data):
@@ -78,14 +79,21 @@ def identify_resolution(data: xarray.Dataset):
         :obj:`str` with resolution id of 'data'
     """
 
-    dlat = data['latitude'].values[1] - data['latitude'].values[0]
+    dlat = abs(data['latitude'].values[1] - data['latitude'].values[0])
 
-    res = f'd{round(dlat*10000):04d}'
+    lat_res = f'd{round(dlat*10000):04d}'
 
-    if res not in ['d0198','d0036']:
-        raise Exception(f"Unknown grid: spacing {dlat}")
+    # also consider longitude resolution in the case of cross-sectioned data
+    # assuming the no. of points is automatic, at least one of lat/lon should have
+    # the same resolution as before
+    dlon = abs(data['longitude'].values[1] - data['longitude'].values[0])
 
-    return res
+    lon_res = f'd{round(dlon*10000):04d}'    
+
+    if lat_res not in ['d0198','d0036'] and lon_res not in ['d0198','d0036']:
+        raise Exception(f"Unknown grid: spacing {dlat} {dlon}")
+
+    return max(lat_res, lon_res)
 
 
 def identify_grid(data: xarray.Dataset):
@@ -144,3 +152,67 @@ def to_barra(data: xarray.Dataset):
     weights = xarray.open_dataset(root / "grids" / f"weights_{grid}_to_barrat.nc")
 
     return regrid(data, weights=weights)
+
+
+
+def regrid_vector(data):
+    """
+    Redrigs vector quantities like u/v defined on grid edges to the
+    scalar grid on gridpoint centres (same resolution as original)
+
+    will need to load a 'dummy' variable to get the coordinates
+    of the gridpoint centres at the same resolution as input data
+    - might be able to just use grids in /g/data instead?
+    -- > these are actually different from the variable grids (?)
+
+    Inputs:
+        data: input data
+    Outputs:
+        data_regrid: regridded data
+    """
+
+    res = identify_resolution(data)        
+
+    # load the grid to reshape input data to
+    # note: for now we are using pressure as a dummy variable to get the target grid
+    # for some reason, the d0198t/d0036t grids are very slightly different from the
+    # actual grid for these variables (offest by around 10e-6)
+
+
+    # grid_path = '/g/data/ia89/aus400/grids/'
+    # if res == 'd0036':
+    #     grid = xr.open_dataarray(grid_path+'d0036t.nc')
+    # elif res == 'd0198':
+    #     grid = xr.open_dataarray(grid_path+'d0198t.nc')
+
+    # note: dims are called lat/lon on the grid but latitude/longitude on the input
+    # change this to be consistent
+    #grid = grid.rename({'lat': 'latitude', 'lon': 'longitude'})
+
+    grid = load(
+        resolution=res,
+        stream="mdl",
+        variable="pressure",
+        time=slice(
+            pandas.offsets.Hour().rollback(data["time"].values[0])
+            - pandas.offsets.Hour(),
+            pandas.offsets.Hour().rollback(data["time"].values[-1])
+            + pandas.offsets.Hour(),
+        ),
+        ensemble=slice(data["ensemble"].values[0], data["ensemble"].values[-1]),
+    )["pressure"]    
+
+    # cut lats/lons of grid to that of input
+    grid = grid.sel(latitude=slice(min(data.latitude), max(data.latitude)))
+    grid = grid.sel(longitude=slice(min(data.longitude), max(data.longitude)))
+
+    # need to squeeze input data (xr.interp_like doesn't like the exta dims for some reason)
+    squeezed_dims = [dim for dim in data.dims if data[dim].size == 1]
+    data = data.squeeze()
+
+    data_regrid = data.interp_like(grid)
+
+    # expand dims (any further vertical interpolation needs expanded dims)
+    data_regrid = data_regrid.expand_dims(squeezed_dims)
+
+    return data_regrid
