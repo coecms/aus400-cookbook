@@ -41,6 +41,8 @@ Sample Notebooks
 
 `Vertical Interpolation <https://nbviewer.jupyter.org/github/coecms/aus400-cookbook/blob/master/notebooks/VerticalInterpolation.ipynb>`_
 
+`Cross Sections <https://nbviewer.jupyter.org/github/coecms/aus400-cookbook/blob/master/notebooks/CrossSection.ipynb>`_
+
 Using the Cookbook
 ------------------
 
