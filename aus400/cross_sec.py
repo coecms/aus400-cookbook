@@ -66,8 +66,14 @@ def cross_sec(data: xr.DataArray, x0, y0, x1, y1, num_points="auto"):
     # now update x0, x1, y0, y1 to the min/max values of the *sliced* data
     # this is important because if the input x0, etc. does not lie exactly on the data coordinates,
     # the resolution will be slightly changed, potentially causing problems down the line
-    x0, x1 = min(data.longitude.values), max(data.longitude.values)
-    y0, y1 = min(data.latitude.values), max(data.latitude.values)
+    if x1 > x0:
+        x0, x1 = min(data.longitude.values), max(data.longitude.values)
+    else:
+        x0, x1 = max(data.longitude.values), min(data.longitude.values)
+    if y1 > y0:
+        y0, y1 = min(data.latitude.values), max(data.latitude.values)
+    else:
+        y0, y1 = max(data.latitude.values), min(data.latitude.values)
 
     # now make a list of points to interpolate to
 

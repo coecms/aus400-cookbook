@@ -33,7 +33,7 @@ dataset, for use by e.g. ESMF_RegridWeightGen.
 
 import xarray
 from climtas.regrid import regrid
-from .cat import root, load
+from .cat import root, load_var
 import numpy
 import pandas
 
