@@ -17,7 +17,6 @@ def cross_sec(data: xr.DataArray, x0, y0, x1, y1, num_points="auto"):
         data_cs: the interpolated cross-section, with new dimension horz_dim
 
     Possible problems:
-    - different names for lat/lon axes (perhaps add an optional argument for dim names?)
     - if num_points is not 'auto', then the resolution of the dataset changes, causing problems
       when doing further stuff like vertical interpolation
 
