@@ -48,8 +48,9 @@ def identify_subgrid(data):
     Returns:
         :obj:`str` with subgrid id of data ('t','u' or 'v')
     """
-    dlat = data["latitude"].values[1] - data["latitude"].values[0]
-    delta = round(dlat * 10000) / 10000
+    dlat = abs(data["latitude"].values[1] - data["latitude"].values[0])
+    dlon = abs(data["longitude"].values[1] - data["longitude"].values[0])
+    delta = round(max(dlat,dlon) * 10000) / 10000
 
     # Subtract centre of domain
     lat_offset = data["latitude"].values[0] - -27.8
@@ -158,6 +159,10 @@ def regrid_vector(data):
     Redrigs vector quantities like u/v defined on grid edges to the
     scalar grid on gridpoint centres (same resolution as original)
 
+    Currently cannot regrid cross-sections of vector quantities --
+    these must be regridded first before taking the cross-section afterwards.
+    (this is because the cross-sections can mess with lat/lon spacing)
+
     will need to load a 'dummy' variable to get the coordinates
     of the gridpoint centres at the same resolution as input data
     - might be able to just use grids in /g/data instead?
@@ -170,21 +175,14 @@ def regrid_vector(data):
     """
 
     res = identify_resolution(data)
+    sub = identify_subgrid(data)
+
+    if 'horz_dim' in data.dims:
+        raise Exception(
+            f"Can't horizontally regrid data on '{sub}' grid, regrid to 't' first"
+        )
 
     # load the grid to reshape input data to
-    # note: for now we are using pressure as a dummy variable to get the target grid
-    # for some reason, the d0198t/d0036t grids are very slightly different from the
-    # actual grid for these variables (offest by around 10e-6)
-
-    # grid_path = '/g/data/ia89/aus400/grids/'
-    # if res == 'd0036':
-    #     grid = xr.open_dataarray(grid_path+'d0036t.nc')
-    # elif res == 'd0198':
-    #     grid = xr.open_dataarray(grid_path+'d0198t.nc')
-
-    # note: dims are called lat/lon on the grid but latitude/longitude on the input
-    # change this to be consistent
-    # grid = grid.rename({'lat': 'latitude', 'lon': 'longitude'})
 
     grid = load_var(
         resolution=res,
