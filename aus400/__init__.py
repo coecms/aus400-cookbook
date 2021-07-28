@@ -7,3 +7,4 @@ from . import regrid
 
 from . import render
 from . import vertical
+from . import cross_sec

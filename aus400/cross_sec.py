@@ -2,6 +2,28 @@ import warnings
 import numpy as np
 import xarray as xr
 
+def deg_to_dist(lons, lats):
+    # function which takes [lon, lat] and returns [dist]
+    # used to create nex axis for cross-sections
+    
+    Re = 6371e3 # radius of earth
+
+    # convert to radians
+    lons_rad = lons * np.pi/180
+    lats_rad = lats * np.pi/180
+
+    dlon = abs(lons_rad[1] - lons_rad[0])
+    dlat = abs(lats_rad[1] - lats_rad[0])
+    
+    dx = Re * np.cos(lats_rad) * dlon
+    dy = Re * dlat
+
+    # length of diagonal
+    ds = (dx**2 + dy**2) **0.5
+
+    dist = np.cumsum(ds) / 1000 # in km
+
+    return dist
 
 def cross_sec(data: xr.DataArray, x0, y0, x1, y1, num_points="auto"):
     """
@@ -15,13 +37,11 @@ def cross_sec(data: xr.DataArray, x0, y0, x1, y1, num_points="auto"):
 
     Output:
         data_cs: the interpolated cross-section, with new dimension horz_dim
+                 (also contains distance as a coordinate along the cross-section)
 
     Possible problems:
     - if num_points is not 'auto', then the resolution of the dataset changes, causing problems
       when doing further stuff like vertical interpolation
-
-    Other stuff to possibly implement:
-    - convert horz_dim to more useful units like distance/lat/lon (depends on shape)
     """
 
     if x0 == x1 and y0 == y1:
@@ -90,15 +110,19 @@ def cross_sec(data: xr.DataArray, x0, y0, x1, y1, num_points="auto"):
             y = data.latitude.values
             x = np.linspace(x0, x1, num_points)
     else:
-        x = np.linspace(x0, x1, num_points)  # data.longitude.values
+        x = np.linspace(x0, x1, num_points)
         y = np.linspace(y0, y1, num_points)
-
+    
     # convert x/y to DataArrays for xarray advanced interpolation
-    x = xr.DataArray(x, dims="horz_dim")
-    y = xr.DataArray(y, dims="horz_dim")
+    x = xr.DataArray(x, dims="horz_dim")#, coords={"distance": horz_coords})
+    y = xr.DataArray(y, dims="horz_dim")#, coords={"distance": horz_coords})
 
     # Let xarray handle the actual interpolation
     # (by default, this is linear interpolation)
     data_cs = data.interp(longitude=x, latitude=y)
+    
+    # calculate distance along horizontal to use as coords for new axis
+    horz_coords = deg_to_dist(x.values, y.values)
+    data_cs = data_cs.assign_coords(distance=("horz_dim", horz_coords))
 
     return data_cs
