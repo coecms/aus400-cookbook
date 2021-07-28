@@ -3,8 +3,17 @@ import numpy as np
 import xarray as xr
 
 def deg_to_dist(lons, lats):
-    # function which takes [lon, lat] and returns [dist]
-    # used to create nex axis for cross-sections
+    """
+    Converts an array of latitudes and longitudes to distance from 1st point
+    Used as a coordinate for cross-sections
+
+    Input:
+        lons: array of longitude points
+        lats: array of latitude points
+        (lats and lons must be the same size)
+    Output:
+        dist: array of cumulative distances from the first point
+    """
     
     Re = 6371e3 # radius of earth
 
