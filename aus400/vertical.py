@@ -88,9 +88,10 @@ def to_plev(ds, levels):
         y0, y1 = ds["latitude"].values[0], ds["latitude"].values[-1]
         pressure = cross_sec(pressure, x0, y0, x1, y1)
 
-    # align datasets (match_slice should handle this but sometimes problems occur
-    # after regridding)
-    pressure, ds = xarray.align(pressure, ds)        
+    # Reindex pressure to input dataset
+    # This removes any problems which occur due to mismatched grids (sometimes latitude/longitude
+    # differs by very small numerical values between datasets)
+    pressure = pressure.reindex_like(ds, method='nearest')
 
     return vertical_interp(ds, pressure, levels)
 
@@ -123,9 +124,10 @@ def to_height(ds, levels):
         y0, y1 = ds.latitude.values[0], ds.latitude.values[-1]
         height = cross_sec(height, x0, y0, x1, y1)
 
-    # align datasets (match_slice should handle this but sometimes problems occur
-    # after regridding)
-    height, ds = xarray.align(height, ds)        
+    # Reindex height to input dataset
+    # This removes any problems which occur due to mismatched grids (sometimes latitude/longitude
+    # differs by very small numerical values between datasets)
+    height = height.reindex_like(ds, method='nearest')
 
     return vertical_interp(ds, height, levels)
 
