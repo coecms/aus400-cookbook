@@ -50,6 +50,20 @@ def deg_to_dist(lons, lats):
     return dist
 
 def cross_sec(data: xr.DataArray, x0, y0, x1, y1, num_points="auto"):
+    """
+    Converts 3D data to 2D data along the section (x0, y0) -> (x1, y1)
+    Input:
+        data: the data to interpolate
+        (x0, y0): the starting point of the cross-section
+        (x1, y1): the ending point of the cross-section
+        num_points: how many points to return along the new axis
+    Output:
+        data_cs: the interpolated cross-section, with new dimension horz_dim
+                 (also contains distance as a coordinate along the cross-section)
+    Possible problems:
+    - if num_points is not 'auto', then the resolution of the dataset changes, causing problems
+      when doing further stuff like vertical interpolation
+    """    
 
     if x0 == x1 and y0 == y1:
         raise ValueError("Start and end points are the same!")
@@ -149,3 +163,4 @@ def cross_sec(data: xr.DataArray, x0, y0, x1, y1, num_points="auto"):
     data_cs = data.interp(longitude=x, latitude=y)
 
     return data_cs
+    
