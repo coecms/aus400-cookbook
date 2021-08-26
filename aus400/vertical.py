@@ -83,9 +83,17 @@ def to_plev(ds, levels):
     )
 
     # may need to c.s. data if the input is also c.s.
-    if "horz_dim" in ds.dims:
-        x0, x1 = ds["longitude"].values[0], ds["longitude"].values[-1]
-        y0, y1 = ds["latitude"].values[0], ds["latitude"].values[-1]
+    if "distance" in ds.dims:
+        if ds["longitude"].size > 1:
+            x0, x1 = ds["longitude"].values[0], ds["longitude"].values[-1]
+        else:
+            # meridional slice, x0 = x1
+            x0, x1 = ds["longitude"].values, ds["longitude"].values
+        if ds["latitude"].size > 1:
+            y0, y1 = ds["latitude"].values[0], ds["latitude"].values[-1]
+        else:
+            # zonal slice, y0 = y1
+            y0, y1 = ds["latitude"].values, ds["latitude"].values
         pressure = cross_sec(pressure, x0, y0, x1, y1)
 
     # Reindex pressure to input dataset
@@ -119,9 +127,17 @@ def to_height(ds, levels):
     height = load_var(resolution=res, stream="fx", variable="height_rho")
 
     # may need to c.s. data if the input is also c.s.
-    if "horz_dim" in ds.dims:
-        x0, x1 = ds.longitude.values[0], ds.longitude.values[-1]
-        y0, y1 = ds.latitude.values[0], ds.latitude.values[-1]
+    if "distance" in ds.dims:
+        if ds["longitude"].size > 1:
+            x0, x1 = ds["longitude"].values[0], ds["longitude"].values[-1]
+        else:
+            # meridional slice, x0 = x1
+            x0, x1 = ds["longitude"].values, ds["longitude"].values
+        if ds["latitude"].size > 1:
+            y0, y1 = ds["latitude"].values[0], ds["latitude"].values[-1]
+        else:
+            # zonal slice, y0 = y1
+            y0, y1 = ds["latitude"].values, ds["latitude"].values
         height = cross_sec(height, x0, y0, x1, y1)
 
     # Reindex height to input dataset
