@@ -48,13 +48,23 @@ def identify_subgrid(data):
     Returns:
         :obj:`str` with subgrid id of data ('t','u' or 'v')
     """
-    dlat = abs(data["latitude"].values[1] - data["latitude"].values[0])
-    dlon = abs(data["longitude"].values[1] - data["longitude"].values[0])
+    # Need to check lat/lon sizes in the case of zonal/meridional cross-sections
+    
+    if data["latitude"].size > 1:
+        dlat = abs(data["latitude"].values[1] - data["latitude"].values[0])
+        lat_offset = data["latitude"].values[0] - -27.8        
+    else:
+        dlat = 0
+        lat_offset = data["latitude"].values - -27.8  
+        
+    if data["longitude"].size > 1:
+        dlon = abs(data["longitude"].values[1] - data["longitude"].values[0])
+        lon_offset = data["longitude"].values[0] - 133.26
+    else:
+        dlon = 0
+        lon_offset = data["longitude"].values - 133.26
+        
     delta = round(max(dlat,dlon) * 10000) / 10000
-
-    # Subtract centre of domain
-    lat_offset = data["latitude"].values[0] - -27.8
-    lon_offset = data["longitude"].values[0] - 133.26
 
     lat_offset = numpy.mod(lat_offset, delta)
     lon_offset = numpy.mod(lon_offset, delta)
@@ -80,14 +90,20 @@ def identify_resolution(data: xarray.Dataset):
         :obj:`str` with resolution id of 'data'
     """
 
-    dlat = abs(data["latitude"].values[1] - data["latitude"].values[0])
+    if data["latitude"].size > 1:
+        dlat = abs(data["latitude"].values[1] - data["latitude"].values[0])
+    else:
+        dlat = 0
 
     lat_res = f"d{round(dlat*10000):04d}"
 
     # also consider longitude resolution in the case of cross-sectioned data
     # assuming the no. of points is automatic, at least one of lat/lon should have
     # the same resolution as before
-    dlon = abs(data["longitude"].values[1] - data["longitude"].values[0])
+    if data["longitude"].size > 1:
+        dlon = abs(data["longitude"].values[1] - data["longitude"].values[0])
+    else:
+        dlon = 0
 
     lon_res = f"d{round(dlon*10000):04d}"
 
@@ -177,7 +193,7 @@ def regrid_vector(data):
     res = identify_resolution(data)
     sub = identify_subgrid(data)
 
-    if 'horz_dim' in data.dims:
+    if 'distance' in data.dims:
         raise Exception(
             f"Can't horizontally regrid data on '{sub}' grid, regrid to 't' first"
         )
@@ -191,8 +207,8 @@ def regrid_vector(data):
     )
 
     # cut lats/lons of grid to that of input
-    grid = grid.sel(latitude=slice(min(data.latitude), max(data.latitude)))
-    grid = grid.sel(longitude=slice(min(data.longitude), max(data.longitude)))
+    grid = grid.sel(latitude=slice(data.latitude.min(), data.latitude.max()))
+    grid = grid.sel(longitude=slice(data.longitude.min(), data.longitude.max()))
 
     # need to squeeze input data (xr.interp_like doesn't like the exta dims for some reason)
     squeezed_dims = [dim for dim in data.dims if data[dim].size == 1]
